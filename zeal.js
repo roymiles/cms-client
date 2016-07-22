@@ -1,5 +1,8 @@
 var token = '6537901131';
 var url = 'http://localhost/Api/';
+
+var _user; // Current user
+
 var zeal = (function () {
     // Constructor
     function zeal(initially) {
@@ -10,26 +13,41 @@ var zeal = (function () {
         }
     }
     zeal.Extras = [];
-
-    zeal.prototype.login = function (node) {
+    
+    zeal.prototype._user = function (node) {
+        if(!isLoggedIn){ return; }
         switch(node.dataset.id){
-            case 'form':
-                zeal.prototype.login_form(node);
+            case 'id':
+                var content = (_user.id ? _user.id : 'Empty ID');
+                node.innerHTML(content)
                 break;
                 
             case 'username':
-                var content = (user.username ? user.username : '');
+                var content = (_user.username ? _user.username : 'Empty Username');
                 node.innerHTML(content)
                 break;
+        }      
+    };
+
+    zeal.prototype._security = function (node) {
+        switch(node.dataset.id){
+            case 'loginForm':
+            case '_loginForm':
+                zeal.prototype._loginForm(node);
+                break;
+            case 'registerForm':
+            case '_registerForm':
+                zeal.prototype._registerForm(node);
+                break;                
         }  
     };
     
-    zeal.prototype.login_form = function (node) {
+    zeal.prototype._loginForm = function (node) {
         var f = document.createElement("form");
         f.setAttribute('id',"zeal-login");
         f.setAttribute('method',"post");
         f.setAttribute('action',url+"login");
-        f.setAttribute('onsubmit',"return zeal.prototype.login_submit()");
+        f.setAttribute('onsubmit',"return zeal.prototype._loginSubmit()");
         
         var i = document.createElement("input"); //input element, text
         i.setAttribute('id',"zeal-username");
@@ -48,7 +66,7 @@ var zeal = (function () {
         document.node.appendChild(f); // Append the form to the node 
     };
     
-    zeal.prototype.login_submit = function () {
+    zeal.prototype._loginSubmit = function () {
         var username = document.getElementById('zeal-username');
         zeal.prototype.login_isValid = true;
         if (zeal.prototype.login_isValid) {
@@ -73,15 +91,19 @@ var zeal = (function () {
         return false; // Stop form from submitting
     };
     
-    zeal.prototype.register = function (node) {
+    zeal.prototype._registerForm = function (node) {
         // Create and render register form    
     };
+    
+    zeal.prototype._registerSubmit = function (node) {
+        // On submit of the register form   
+    };    
 
     return zeal;
 }());
 
 
-var ready = function ( fn ) {
+var ready = function (fn) {
 
     // Sanity check
     if ( typeof fn !== 'function' ) return;
