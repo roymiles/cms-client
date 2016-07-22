@@ -12,11 +12,24 @@ var zeal = (function () {
     zeal.Extras = [];
 
     zeal.prototype.login = function (node) {
+        switch(node.dataset.id){
+            case 'form':
+                zeal.prototype.login_form(node);
+                break;
+                
+            case 'username':
+                var content = (user.username ? user.username : '');
+                node.innerHTML(content)
+                break;
+        }  
+    };
+    
+    zeal.prototype.login_form = function (node) {
         var f = document.createElement("form");
         f.setAttribute('id',"zeal-login");
         f.setAttribute('method',"post");
         f.setAttribute('action',url+"login");
-        f.setAttribute('onsubmit',"return zeal.prototype.login_submit");
+        f.setAttribute('onsubmit',"return zeal.prototype.login_submit()");
         
         var i = document.createElement("input"); //input element, text
         i.setAttribute('id',"zeal-username");
@@ -32,7 +45,7 @@ var zeal = (function () {
         f.appendChild(i);
         f.appendChild(s);
         
-        document.node.appendChild(f); // Append the form to the node   
+        document.node.appendChild(f); // Append the form to the node 
     };
     
     zeal.prototype.login_submit = function () {
