@@ -1,4 +1,5 @@
 var token = '6537901131';
+var url = 'http://localhost';
 var zeal = (function () {
     // Constructor
     function zeal(initially) {
@@ -40,7 +41,33 @@ var ready = function ( fn ) {
 ready(function() {
     // Do stuff...
     
-    // Get and load dependancies using token...
+    // Get and load the dependancies using token...
+    var request = new XMLHttpRequest();
+    request.open('GET', url+token+'/dependancies', true);
+    
+    request.onload = function() {
+      if (request.status >= 200 && request.status < 400) {
+        // Success!
+        var data = JSON.parse(request.responseText);
+        zeal.Extras.push(
+            function () {
+                // Push functions into zeal class
+                this.data['name'] = data['fn'];
+            }
+        );
+        
+        
+        } else {
+            // We reached our target server, but it returned an error
+            alert('Shit...');
+        }
+    };
+    
+    request.onerror = function() {
+      // There was a connection error of some sort
+    };
+    
+    request.send();
     
     // Find all nodes with the 'zeal' class
     var obj = document.getElementsByClassName('zeal');
