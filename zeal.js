@@ -13,10 +13,13 @@ var zeal = (function () {
 
     zeal.prototype.login = function (node) {
         var f = document.createElement("form");
+        f.setAttribute('id',"zeal-login");
         f.setAttribute('method',"post");
         f.setAttribute('action',url+"login");
+        f.setAttribute('onsubmit',"return zeal.prototype.login_submit");
         
         var i = document.createElement("input"); //input element, text
+        i.setAttribute('id',"zeal-username");
         i.setAttribute('type',"text");
         i.setAttribute('name',"username");
         i.setAttribute('class',"zeal-texbox");
@@ -30,6 +33,31 @@ var zeal = (function () {
         f.appendChild(s);
         
         document.node.appendChild(f); // Append the form to the node   
+    };
+    
+    zeal.prototype.login_submit = function () {
+        var username = document.getElementById('zeal-username');
+        zeal.prototype.login_isValid = true;
+        if (zeal.prototype.login_isValid) {
+            // Send the login request to the API
+            var request = new XMLHttpRequest();
+            request.open('POST', url + token + '/login', true);
+            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+            request.send(username);
+            
+            // Get response
+            
+            if (window.CustomEvent) {
+              var event = new CustomEvent('loggedIn', {detail: {some: 'data'}});
+            } else {
+              var event = document.createEvent('CustomEvent');
+              event.initCustomEvent('loggedIn', true, true, {some: 'data'});
+            }
+            
+            el.dispatchEvent(event);
+            
+        }
+        return false; // Stop form from submitting
     };
     
     zeal.prototype.register = function (node) {
