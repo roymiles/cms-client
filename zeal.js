@@ -89,7 +89,7 @@ var zeal = (function () {
         i.setAttribute('name',"username");
         i.setAttribute('class',"zeal-texbox");
         
-        var p = document.createElement("input"); // Username field
+        var p = document.createElement("input"); // Password field
         p.setAttribute('id',"zeal-password");
         p.setAttribute('type',"text");
         p.setAttribute('name',"password");
@@ -165,6 +165,33 @@ var zeal = (function () {
     zeal.prototype._registerSubmit = function (node) {
         // On submit of the register form   
     };    
+    
+    
+    zeal.prototype._createCookie = function (name, value, days) {
+    	if (days) {
+    		var date = new Date();
+    		date.setTime(date.getTime()+(days*24*60*60*1000));
+    		var expires = "; expires="+date.toGMTString();
+    	}
+    	else var expires = "";
+    	document.cookie = name+"="+value+expires+"; path=/";
+    }
+    
+    zeal.prototype._readCookie = function (name) {
+    	var nameEQ = name + "=";
+    	var ca = document.cookie.split(';');
+    	for(var i=0;i < ca.length;i++) {
+    		var c = ca[i];
+    		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+    		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    	}
+    	return null;
+    }
+    
+    zeal.prototype._eraseCookie = function (name) {
+    	createCookie(name,"",-1);
+    }    
+    
 
     return zeal;
 }());
@@ -197,7 +224,7 @@ ready(function() {
     if (document.cookie.indexOf("SESHID") >= -1) {
         // Validate this token throught the API
         var request = new XMLHttpRequest();
-        request.open('GET', url+token+'/'+getCookie('SESHID') , true); // Not implemented function
+        request.open('GET', url+token+'/'+zeal.prototype._readCookie('SESHID') , true); // Not implemented function
         
         request.onload = function() {
             if (request.status >= 200 && request.status < 400) {
