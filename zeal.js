@@ -1,7 +1,11 @@
 var token = '6537901131';
 var url = 'http://localhost/Api/';
+var _API = url + token;
 
-var _user; // Current user
+var _isLoggedIn; // Bool for to determine users state
+var _user; // Object to hold users details
+var _SESHID; // Users session ID
+var _CSRFTOKEN; // Unique token to prevent CSRF
 
 var zeal = (function () {
     // Constructor
@@ -37,11 +41,9 @@ var zeal = (function () {
     zeal.prototype._security = function (node) {
         switch(node.dataset.id){
             case 'loginForm':
-            case '_loginForm':
                 zeal.prototype._loginForm(node);
                 break;
             case 'registerForm':
-            case '_registerForm':
                 zeal.prototype._registerForm(node);
                 break;                
         }  
@@ -188,7 +190,7 @@ ready(function() {
     
     // Get and load the dependancies using token...
     var request = new XMLHttpRequest();
-    request.open('GET', url+token+'/dependancies', true);
+    request.open('GET', _API+'/dependancies', true);
     
     request.onload = function() {
       if (request.status >= 200 && request.status < 400) {
