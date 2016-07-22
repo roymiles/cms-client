@@ -1,5 +1,5 @@
 var token = '6537901131';
-var url = 'http://localhost';
+var url = 'http://localhost/Api/';
 var zeal = (function () {
     // Constructor
     function zeal(initially) {
@@ -11,8 +11,30 @@ var zeal = (function () {
     }
     zeal.Extras = [];
 
-    zeal.prototype.method1 = function () {/* stuff */};
-    zeal.prototype.method2 = function () {/* stuff */};
+    zeal.prototype.login = function (node) {
+        var f = document.createElement("form");
+        f.setAttribute('method',"post");
+        f.setAttribute('action',url+"login");
+        
+        var i = document.createElement("input"); //input element, text
+        i.setAttribute('type',"text");
+        i.setAttribute('name',"username");
+        i.setAttribute('class',"zeal-texbox");
+        
+        var s = document.createElement("input"); //input element, Submit button
+        s.setAttribute('type',"submit");
+        s.setAttribute('value',"Submit");
+        s.setAttribute('class',"zeal-submit");
+        
+        f.appendChild(i);
+        f.appendChild(s);
+        
+        document.node.appendChild(f); // Append the form to the node   
+    };
+    
+    zeal.prototype.register = function (node) {
+        // Create and render register form    
+    };
 
     return zeal;
 }());
