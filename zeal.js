@@ -1,3 +1,22 @@
+var token = '6537901131';
+var zeal = (function () {
+    // Constructor
+    function zeal(initially) {
+        //stuff
+        var i;
+        for (i = 0; i < zeal.Extras.length; ++i) {
+            zeal.Extras[i].apply(this);
+        }
+    }
+    zeal.Extras = [];
+
+    zeal.prototype.method1 = function () {/* stuff */};
+    zeal.prototype.method2 = function () {/* stuff */};
+
+    return zeal;
+}());
+
+
 var ready = function ( fn ) {
 
     // Sanity check
@@ -21,13 +40,20 @@ var ready = function ( fn ) {
 ready(function() {
     // Do stuff...
     
+    // Get and load dependancies using token...
+    
     // Find all nodes with the 'zeal' class
     var obj = document.getElementsByClassName('zeal');
     var items = [].slice.call(obj)
     for (var i = 0, len = items.length; i < len; i++) {
-      // Get module name
-      items[i].dataset.columns
+        // Get module name
+        var module = items[i].dataset.module;
+        
+        // Check if module is imported and if so call the function
+        if (typeof zeal.prototype[module] == 'function') { 
+            zeal.prototype[module](items[i]); // Pass the node dependancy into the module 
+        }
       
-      // Check to see if this module is installed...
+        // Check to see if this module is installed...
     }
 });
