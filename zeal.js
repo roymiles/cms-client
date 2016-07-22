@@ -72,7 +72,7 @@ var zeal = (function () {
         document.node.appendChild(f); // Append the form to the node 
     };
     
-    zeal.prototype._loginSubmit = function () {
+    zeal.prototype._loginSubmit = function (redirect) {
         var username = document.getElementById('zeal-username');
         zeal.prototype.login_isValid = true;
         if (zeal.prototype.login_isValid) {
@@ -81,17 +81,14 @@ var zeal = (function () {
             request.open('POST', url + token + '/login', true);
             request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
             request.send(username);
-            
-            // Get response
-            
-            if (window.CustomEvent) {
-              var event = new CustomEvent('loggedIn', {detail: {some: 'data'}});
-            } else {
-              var event = document.createEvent('CustomEvent');
-              event.initCustomEvent('loggedIn', true, true, {some: 'data'});
+         
+            var data = JSON.parse(request.responseText);
+            if(data == 'sucess') {
+                document.cookie = 'SESHID=' + data['SESHID'] + '; expires=Fri, 3 Aug 2001 20:47:11 UTC; path=/'
+                window.location.replace(redirect);
+            }else{
+                // Invalid credentials..
             }
-            
-            el.dispatchEvent(event);
             
         }
         return false; // Stop form from submitting
