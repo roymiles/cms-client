@@ -6,13 +6,18 @@ var _user; // Current user
 var zeal = (function () {
     // Constructor
     function zeal(initially) {
-        //stuff
+        // Stuff
         var i;
         for (i = 0; i < zeal.Extras.length; ++i) {
             zeal.Extras[i].apply(this);
         }
     }
     zeal.Extras = [];
+    
+    
+    zeal.prototype._userLookup = function (node) {
+        // Check to see if this users object already exists if not request it from the API    
+    };    
     
     zeal.prototype._user = function (node) {
         if(!isLoggedIn){ return; }
@@ -43,19 +48,20 @@ var zeal = (function () {
     };
     
     zeal.prototype._loginForm = function (node) {
+        if(isLoggedIn){ return; } // Don't show log in form if user is already logged in
         var f = document.createElement("form");
         f.setAttribute('id',"zeal-login");
         f.setAttribute('method',"post");
         f.setAttribute('action',url+"login");
         f.setAttribute('onsubmit',"return zeal.prototype._loginSubmit()");
         
-        var i = document.createElement("input"); //input element, text
+        var i = document.createElement("input"); // Username field
         i.setAttribute('id',"zeal-username");
         i.setAttribute('type',"text");
         i.setAttribute('name',"username");
         i.setAttribute('class',"zeal-texbox");
         
-        var s = document.createElement("input"); //input element, Submit button
+        var s = document.createElement("input"); // Submit element
         s.setAttribute('type',"submit");
         s.setAttribute('value',"Submit");
         s.setAttribute('class',"zeal-submit");
@@ -89,6 +95,10 @@ var zeal = (function () {
             
         }
         return false; // Stop form from submitting
+    };
+    
+    zeal.prototype._logout = function () {
+        // Delete user object and redirect if specified
     };
     
     zeal.prototype._registerForm = function (node) {
