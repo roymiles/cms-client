@@ -6,6 +6,7 @@ var _isLoggedIn; // Bool for to determine users state
 var _user; // Object to hold users details
 var _SESHID; // Users session ID
 var _CSRFTOKEN; // Unique token to prevent CSRF
+var _cachedUsers; // Cached user information
 
 var zeal = (function () {
     // Constructor
@@ -21,6 +22,27 @@ var zeal = (function () {
     
     zeal.prototype._userLookup = function (node) {
         // Check to see if this users object already exists if not request it from the API    
+        if(typeof _cachedUsers[node.dataset.username] != 'undefined') {
+            var request = new XMLHttpRequest();
+            request.open('GET', url+token+'/getUser/'+node.dataset.username , true); // Not implemented function
+            
+            request.onload = function() {
+                if (request.status >= 200 && request.status < 400) {
+                    // Success!
+                    _cachedUsers = JSON.parse(request.responseText);
+                    document.node.appendChild(node.dataset.value);
+                } else {
+                    // We reached our target server, but it returned an error
+                    alert('Failed to retrieve user information');
+                }
+            };
+            
+            request.onerror = function() {
+              // There was a connection error of some sort
+            };
+            
+            request.send();     
+        }
     };    
     
     zeal.prototype._user = function (node) {
@@ -67,12 +89,19 @@ var zeal = (function () {
         i.setAttribute('name',"username");
         i.setAttribute('class',"zeal-texbox");
         
+        var p = document.createElement("input"); // Username field
+        p.setAttribute('id',"zeal-password");
+        p.setAttribute('type',"text");
+        p.setAttribute('name',"password");
+        p.setAttribute('class',"zeal-texbox");        
+        
         var s = document.createElement("input"); // Submit element
         s.setAttribute('type',"submit");
         s.setAttribute('value',"Submit");
         s.setAttribute('class',"zeal-submit");
         
         f.appendChild(i);
+        f.appendChild(p);
         f.appendChild(s);
         
         document.node.appendChild(f); // Append the form to the node 
