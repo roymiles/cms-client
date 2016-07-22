@@ -160,7 +160,31 @@ var ready = function (fn) {
 
 // Example
 ready(function() {
-    // Do stuff...
+
+
+    // Is the user logged in
+    if (document.cookie.indexOf("SESHID") >= -1) {
+        // Validate this token throught the API
+        var request = new XMLHttpRequest();
+        request.open('GET', url+token+'/'+getCookie('SESHID') , true); // Not implemented function
+        
+        request.onload = function() {
+            if (request.status >= 200 && request.status < 400) {
+                // Success!
+                _user = JSON.parse(request.responseText);
+                _isLoggedIn = true;
+            } else {
+                // We reached our target server, but it returned an error
+                alert('Failed to validate session ID');
+            }
+        };
+        
+        request.onerror = function() {
+          // There was a connection error of some sort
+        };
+        
+        request.send();
+    }
     
     // Get and load the dependancies using token...
     var request = new XMLHttpRequest();
@@ -180,7 +204,7 @@ ready(function() {
         
         } else {
             // We reached our target server, but it returned an error
-            alert('Shit...');
+            alert('Failed to retrieve site dependancies');
         }
     };
     
@@ -204,4 +228,5 @@ ready(function() {
       
         // Check to see if this module is installed...
     }
+    
 });
