@@ -49,11 +49,15 @@ var zeal = (function () {
     
     zeal.prototype._loginForm = function (node) {
         if(isLoggedIn){ return; } // Don't show log in form if user is already logged in
+        
+        // Has admin specified a redirect URL? If not redirect to home
+        var redirect = node.dataset.redirect ? node.dataset.redirect : '/';
+        
         var f = document.createElement("form");
         f.setAttribute('id',"zeal-login");
         f.setAttribute('method',"post");
         f.setAttribute('action',url+"login");
-        f.setAttribute('onsubmit',"return zeal.prototype._loginSubmit()");
+        f.setAttribute('onsubmit',"return zeal.prototype._loginSubmit('" + redirect + "')");
         
         var i = document.createElement("input"); // Username field
         i.setAttribute('id',"zeal-username");
@@ -84,7 +88,7 @@ var zeal = (function () {
          
             var data = JSON.parse(request.responseText);
             if(data == 'sucess') {
-                document.cookie = 'SESHID=' + data['SESHID'] + '; expires=Fri, 3 Aug 2001 20:47:11 UTC; path=/'
+                document.cookie = 'SESHID=' + data['SESHID'] + '; expires=Fri, 3 Aug 2001 20:47:11 UTC; path=/';
                 window.location.replace(redirect);
             }else{
                 // Invalid credentials..
@@ -94,8 +98,33 @@ var zeal = (function () {
         return false; // Stop form from submitting
     };
     
-    zeal.prototype._logout = function () {
+    zeal.prototype._logoutForm = function (node) {
+        if(!isLoggedIn){ return; } // Don't show logout form if user is not logged in  
+        
+        // Has admin specified a redirect URL? If not redirect to home
+        var redirect = node.dataset.redirect ? node.dataset.redirect : '/';
+        
+        var f = document.createElement("form");
+        f.setAttribute('id',"zeal-login");
+        f.setAttribute('method',"post");
+        f.setAttribute('action',url+"login");
+        f.setAttribute('onsubmit',"return zeal.prototype._logoutSubmit('" + redirect + "')");
+
+        var s = document.createElement("input"); // Submit element
+        s.setAttribute('type',"submit");
+        s.setAttribute('value',"Submit");
+        s.setAttribute('class',"zeal-submit");
+        
+        f.appendChild(i);
+        f.appendChild(s);
+        
+        document.node.appendChild(f); // Append the form to the node         
+    };
+    
+    zeal.prototype._logoutSubmit = function () {
         // Delete user object and redirect if specified
+        document.cookie = 'SESHID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
+        window.location.replace(redirect);
     };
     
     zeal.prototype._registerForm = function (node) {
