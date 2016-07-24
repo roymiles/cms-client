@@ -1,19 +1,19 @@
-var token = '6537901131';
-var url = 'http://localhost/Api/';
-var _API = url + token;
-
-var _isLoggedIn; // Bool for to determine users state
-var _user; // Object to hold users details
-var _SESHID; // Users session ID
-var _CSRFTOKEN; // Unique token to prevent CSRF
-var _cachedUsers; // Cached user information
-
 var zeal = (function () {
     
+	zeal.token = '6537901131';
+	zeal.url = 'http://92.232.235.0/api/';
+	zeal._API = zeal.url + zeal.token ;	
+
+	zeal._isLoggedIn = 0; // Bool for to determine users state
+	zeal._user; // Object to hold users details
+	zeal._SESHID; // Users session ID
+	zeal._CSRFTOKEN; // Unique token to prevent CSRF
+	zeal._cachedUsers; // Cached user information
+	
     // Constructor
     function zeal(initially) {
-        var i;
-        for (i = 0; i < zeal.Extras.length; ++i) {
+		console.log("Constructor for framework");
+        for (var i = 0; i < zeal.Extras.length; ++i) {
             zeal.Extras[i].apply(this);
         }
     }
@@ -24,7 +24,7 @@ var zeal = (function () {
         // Check to see if this users object already exists if not request it from the API    
         if(typeof _cachedUsers[node.dataset.username] != 'undefined') {
             var request = new XMLHttpRequest();
-            request.open('GET', _API+'/getUser/'+node.dataset.username , true); // Not implemented function
+            request.open('GET',  zeal._API+'/getUser/'+node.dataset.username , true); // Not implemented function
             
             request.onload = function() {
                 if (request.status >= 200 && request.status < 400) {
@@ -47,7 +47,7 @@ var zeal = (function () {
     };    
     
     zeal.prototype._user = function (node) {
-        if(!isLoggedIn){ return; }
+        if(!zeal.isLoggedIn){ return; }
         switch(node.dataset.id){
             case 'id':
                 var content = (_user.id ? _user.id : 'Empty ID');
@@ -68,20 +68,24 @@ var zeal = (function () {
                 break;
             case 'registerForm':
                 zeal.prototype._registerForm(node);
-                break;                
+                break;
+			default:
+				console.log(node.dataset.id + ' is an unknown data-id for the _security module');
         }  
     };
     
     zeal.prototype._loginForm = function (node) {
-        if(isLoggedIn){ return; } // Don't show log in form if user is already logged in
+        if(zeal.isLoggedIn){ return; } // Don't show log in form if user is already logged in
         
+		console.log(node);
+		
         // Has admin specified a redirect URL? If not redirect to home
         var redirect = node.dataset.redirect ? node.dataset.redirect : '/';
         
         var f = document.createElement("form");
         f.setAttribute('id',"zeal-login");
         f.setAttribute('method',"post");
-        f.setAttribute('action',_API+"login");
+        f.setAttribute('action',zeal._API+"/login");
         f.setAttribute('onsubmit',"return zeal.prototype._loginSubmit('" + redirect + "')");
         
         var i = document.createElement("input"); // Username field
@@ -105,7 +109,7 @@ var zeal = (function () {
         f.appendChild(p);
         f.appendChild(s);
         
-        document.node.appendChild(f); // Append the form to the node 
+        node.appendChild(f); // Append the form to the node 
     };
     
     zeal.prototype._loginSubmit = function (redirect) {
@@ -114,7 +118,7 @@ var zeal = (function () {
         if (zeal.prototype.login_isValid) {
             // Send the login request to the API
             var request = new XMLHttpRequest();
-            request.open('POST', url + token + '/login', true);
+            request.open('POST',  zeal._API+'/login', true);
             request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
             request.send(username);
          
@@ -132,7 +136,7 @@ var zeal = (function () {
     };
     
     zeal.prototype._logoutForm = function (node) {
-        if(!isLoggedIn){ return; } // Don't show logout form if user is not logged in  
+        if(!zeal.isLoggedIn){ return; } // Don't show logout form if user is not logged in  
         
         // Has admin specified a redirect URL? If not redirect to home
         var redirect = node.dataset.redirect ? node.dataset.redirect : '/';
@@ -140,7 +144,7 @@ var zeal = (function () {
         var f = document.createElement("form");
         f.setAttribute('id',"zeal-login");
         f.setAttribute('method',"post");
-        f.setAttribute('action',_API+"login");
+        f.setAttribute('action',_API+"/login");
         f.setAttribute('onsubmit',"return zeal.prototype._logoutSubmit('" + redirect + "')");
 
         var s = document.createElement("input"); // Submit element
@@ -161,7 +165,7 @@ var zeal = (function () {
     
     // Create and render register form 
     zeal.prototype._registerForm = function (node) {
-        if(!isLoggedIn){ return; } // Don't show logout form if user is not logged in  
+        if(zeal.isLoggedIn){ return; } // Don't show register form if user is logged in  
         
         // Has admin specified a redirect URL? If not redirect to home
         var redirect = node.dataset.redirect ? node.dataset.redirect : '/';
@@ -169,7 +173,7 @@ var zeal = (function () {
         var f = document.createElement("form");
         f.setAttribute('id',"zeal-register");
         f.setAttribute('method',"post");
-        f.setAttribute('action',_API+"register");
+        f.setAttribute('action',zeal._API+"/register");
         f.setAttribute('onsubmit',"return zeal.prototype._logoutSubmit('" + redirect + "')");
 
         var i = document.createElement("input"); // Username field
@@ -201,7 +205,7 @@ var zeal = (function () {
         f.appendChild(p);
         f.appendChild(s);
         
-        document.node.appendChild(f); // Append the form to the node        
+        node.appendChild(f); // Append the form to the node        
         
     };
     
@@ -241,100 +245,93 @@ var zeal = (function () {
     
     zeal.prototype._eraseCookie = function (name) {
     	createCookie(name,"",-1);
-    }    
+    }
+
+	zeal.prototype._loginCheck = function () {
+		if (document.cookie.indexOf("SESHID") >= 0) {
+			// Validate this token throught the API
+			var request = new XMLHttpRequest();
+			request.open('GET',  zeal._API+'/'+zeal.prototype._readCookie('SESHID') , true);
+			
+			request.onload = function() {
+				if (request.status >= 200 && request.status < 400) {
+					// Success!
+					_user = JSON.parse(request.responseText);
+					_isLoggedIn = true;
+				} else {
+					// We reached our target server, but it returned an error
+					console.log('Failed to validate session ID. #1');
+				}
+			};
+			
+			request.onerror = function() {
+			  // There was a connection error of some sort
+			};
+			
+			request.send();
+		} else {
+			console.log("No session ID cookie");
+		}
+	}
+	
+	zeal.prototype._loadDependencies = function () {
+		// Get and load the dependencies using token...
+		var request = new XMLHttpRequest();
+		request.open('GET',  zeal._API+'/dependencies', true);
+		
+		request.onload = function() {
+			if (request.status >= 200 && request.status < 400) {
+				// Success!
+				var dependencies = JSON.parse(request.responseText);
+				if(dependencies.references != 0){
+					zeal.Extras.push(
+						function () {
+							// Push functions into zeal class
+							this.data['name'] = data['fn'];
+						}
+					);
+				} else {
+					console.log('No dependencies to load');
+				}
+
+
+			}else{
+				// We reached our target server, but it returned an error
+				console.log('Failed to retrieve site dependencies. #1');
+			}
+		};
+		
+		request.onerror = function() {
+			// There was a connection error of some sort
+			console.log('Failed to retrieve site dependencies. #2');
+		};
+		
+		request.send();
+	}
+	
+	zeal.prototype._renderTemplates = function () {
+		// Find all nodes with the 'zeal' class
+		var obj = document.getElementsByClassName('zeal');
+		var items = [].slice.call(obj);
+		console.log(items.length + " templates to render");
+		for (var i = 0, len = items.length; i < len; i++) {
+			console.log('Rendering a template...');
+			// Get module name
+			var module = items[i].dataset.module;
+			
+			// Check if module is imported and if so call the function
+			if (typeof zeal.prototype[module] == 'function') {
+				console.log(zeal.prototype);
+				console.log('Loading module');
+				zeal.prototype[module](items[i]); // Pass the node dependancy into the module 
+			} else {
+				console.log(module + ' module does not exist');
+			}
+		  
+			// Check to see if this module is installed...
+		}
+	}
     
 
     return zeal;
 }());
-
-
-var ready = function (fn) {
-
-    // Sanity check
-    if ( typeof fn !== 'function' ) return;
-
-    // If document is already loaded, run method
-    if ( document.readyState === 'complete'  ) {
-        return fn();
-    }
-
-    // Otherwise, wait until document is loaded
-    // The document has finished loading and the document has been parsed but sub-resources such as images, stylesheets and frames are still loading. The state indicates that the DOMContentLoaded event has been fired.
-    document.addEventListener( 'interactive', fn, false );
-
-    // Alternative: The document and all sub-resources have finished loading. The state indicates that the load event has been fired.
-    // document.addEventListener( 'complete', fn, false );
-
-};
-
-// Example
-ready(function() {
-
-    // Is the user logged in
-    if (document.cookie.indexOf("SESHID") >= -1) {
-        // Validate this token throught the API
-        var request = new XMLHttpRequest();
-        request.open('GET', url+token+'/'+zeal.prototype._readCookie('SESHID') , true);
-        
-        request.onload = function() {
-            if (request.status >= 200 && request.status < 400) {
-                // Success!
-                _user = JSON.parse(request.responseText);
-                _isLoggedIn = true;
-            } else {
-                // We reached our target server, but it returned an error
-                console.log('Failed to validate session ID');
-            }
-        };
-        
-        request.onerror = function() {
-          // There was a connection error of some sort
-        };
-        
-        request.send();
-    }
-    
-    // Get and load the dependancies using token...
-    var request = new XMLHttpRequest();
-    request.open('GET', _API+'/dependancies', true);
-    
-    request.onload = function() {
-      if (request.status >= 200 && request.status < 400) {
-        // Success!
-        var data = JSON.parse(request.responseText);
-        zeal.Extras.push(
-            function () {
-                // Push functions into zeal class
-                this.data['name'] = data['fn'];
-            }
-        );
-        
-        
-        } else {
-            // We reached our target server, but it returned an error
-            console.log('Failed to retrieve site dependancies');
-        }
-    };
-    
-    request.onerror = function() {
-      // There was a connection error of some sort
-    };
-    
-    request.send();
-    
-    // Find all nodes with the 'zeal' class
-    var obj = document.getElementsByClassName('zeal');
-    var items = [].slice.call(obj)
-    for (var i = 0, len = items.length; i < len; i++) {
-        // Get module name
-        var module = items[i].dataset.module;
-        
-        // Check if module is imported and if so call the function
-        if (typeof zeal.prototype[module] == 'function') { 
-            zeal.prototype[module](items[i]); // Pass the node dependancy into the module 
-        }
-      
-        // Check to see if this module is installed...
-    }
-    
-});

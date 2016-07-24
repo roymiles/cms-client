@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<script src="zeal.js"></script>
+		<script type="text/javascript">
+			document.addEventListener( 'DOMContentLoaded', function () {
+				console.log('DOM loaded');
+				zeal.token = '6537901131';
+				zeal.prototype._loginCheck();
+				zeal.prototype._loadDependencies();
+				zeal.prototype._renderTemplates();
+			}, false );
+		</script>
+	</head>
+	<body>
+		Hello World!
+		<br>
+		<br>
+		<br>
+		<div class="zeal" data-module="_security" data-id="loginForm"></div>
+		<br>
+		<br>
+		<br>
+		<div class="zeal" data-module="_security" data-id="registerForm"></div>
+	</body>
+</html>
