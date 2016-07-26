@@ -93,12 +93,22 @@ var zeal = (function () {
         i.setAttribute('type',"text");
         i.setAttribute('name',"username");
         i.setAttribute('class',"zeal-texbox");
+	        
+	var il = document.createElement("Label");
+	il.setAttribute("for", "zeal-username");
+	il.setAttribute('class',"zeal-label");
+	il.innerHTML = "Username";        
         
         var p = document.createElement("input"); // Password field
         p.setAttribute('id',"zeal-password");
         p.setAttribute('type',"text");
         p.setAttribute('name',"password");
-        p.setAttribute('class',"zeal-texbox");        
+        p.setAttribute('class',"zeal-texbox");     
+        
+	var pl = document.createElement("Label");
+	pl.setAttribute("for", "zeal-password");
+	pl.setAttribute('class',"zeal-label");
+	pl.innerHTML = "Password";              
         
         var s = document.createElement("input"); // Submit element
         s.setAttribute('type',"submit");
@@ -182,17 +192,32 @@ var zeal = (function () {
         i.setAttribute('name',"username");
         i.setAttribute('class',"zeal-texbox");
         
+	var il = document.createElement("Label");
+	il.setAttribute("for", "zeal-username");
+	il.setAttribute('class',"zeal-label");
+	il.innerHTML = "Username";        
+        
         var e = document.createElement("input"); // Email field
         e.setAttribute('id',"zeal-email");
         e.setAttribute('type',"text");
         e.setAttribute('name',"email");
-        e.setAttribute('class',"zeal-texbox");        
+        e.setAttribute('class',"zeal-texbox");  
+        
+	var el = document.createElement("Label");
+	el.setAttribute("for", "zeal-email");
+	el.setAttribute('class',"zeal-label");
+	el.innerHTML = "Email";              
         
         var p = document.createElement("input"); // Password field
         p.setAttribute('id',"zeal-password");
         p.setAttribute('type',"text");
         p.setAttribute('name',"password");
-        p.setAttribute('class',"zeal-texbox");        
+        p.setAttribute('class',"zeal-texbox");   
+        
+	var pl = document.createElement("Label");
+	pl.setAttribute("for", "zeal-password");
+	pl.setAttribute('class',"zeal-label");
+	pl.innerHTML = "Password";              
 
         var s = document.createElement("input"); // Submit element
         s.setAttribute('type',"submit");
