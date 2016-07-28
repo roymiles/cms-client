@@ -1,6 +1,5 @@
 var zeal = (function () {
     
-	zeal.token = '6537901131';
 	zeal.url = 'http://92.232.235.0/api/';
 	zeal._API = zeal.url + zeal.token ;	
 
